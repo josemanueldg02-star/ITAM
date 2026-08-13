@@ -28,4 +28,9 @@ public class AssetController {
     public Asset create(@RequestBody Asset asset) {
         return service.saveAsset(asset);
     }
+
+    @PutMapping("/{assetId}/assign/{employeeId}")
+    public Asset assignAsset(@PathVariable Long assetId, @PathVariable Long employeeId) {
+        return service.assignAssetToEmployee(assetId, employeeId);
+    }
 }
