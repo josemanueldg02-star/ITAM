@@ -7,6 +7,7 @@ import com.portfolio.itam.repository.EmployeeRepository;
 import com.portfolio.itam.model.Employee;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Optional; // <-- NUEVO IMPORT NECESARIO
 
 @Service
 public class AssetService {
@@ -30,6 +31,12 @@ public class AssetService {
         return assetRepository.save(asset);
     }
 
+    // ---> ¡ESTA ES LA PIEZA QUE FALTABA! <---
+    // Método para buscar un activo por su ID
+    public Optional<Asset> findById(Long id) {
+        return assetRepository.findById(id);
+    }
+
     // Método para asignar un activo a un empleado.
     public Asset assignAssetToEmployee(Long assetId, Long employeeId) {
         // Búsqueda del activo y el empleado en la base de datos.
@@ -44,6 +51,20 @@ public class AssetService {
         asset.setStatus("ASIGNADO");
 
         // Guardado de cambios.
+        return assetRepository.save(asset);
+    }
+
+    // Método para cambiar el estado (ej. Mandar a reparar)
+    public Asset changeAssetStatus(Long assetId, String newStatus) {
+        Asset asset = assetRepository.findById(assetId)
+        .orElseThrow(() -> new RuntimeException("Error: Activo no encontrado"));
+
+        // Si lo mandamos a reparar, por lógica de negocio, se lo quitamos al empleado
+        if ("EN REPARACIÓN".equals(newStatus)) {
+            asset.setEmployee(null);
+        }
+        
+        asset.setStatus(newStatus);
         return assetRepository.save(asset);
     }
 }
