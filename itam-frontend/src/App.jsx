@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react';
-import { Toaster } from 'react-hot-toast';
+import { Toaster, toast } from 'react-hot-toast';
 import Sidebar from './components/Sidebar';
+import Topbar from './components/Topbar'; // <-- Importamos nuestro nuevo componente
 import AssetList from './components/AssetList';
 import EmployeeList from './components/EmployeeList';
 import Dashboard from './components/Dashboard';
-import Login from './components/Login'; // Importamos la nueva pantalla
+import Login from './components/Login';
 
 function App() {
   const [currentView, setCurrentView] = useState('dashboard');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Al cargar la web, comprobamos si ya hay un token guardado (sesión activa)
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -18,7 +18,13 @@ function App() {
     }
   }, []);
 
-  // Si no está autenticado, renderizamos ÚNICAMENTE la pantalla de Login
+  // Función para cerrar sesión de forma segura
+  const handleLogout = () => {
+    localStorage.clear(); // Destruimos los pases VIP de la memoria
+    setIsAuthenticated(false); // Cambiamos el estado para que React nos expulse a la pantalla de Login
+    toast.success("Sesión cerrada correctamente", { icon: '👋' });
+  };
+
   if (!isAuthenticated) {
     return (
       <>
@@ -28,9 +34,8 @@ function App() {
     );
   }
 
-  // Si está autenticado, renderizamos la aplicación completa
   return (
-    <div className="flex h-screen bg-darker">
+    <div className="flex h-screen bg-darker overflow-hidden">
       <Toaster 
         position="bottom-right"
         toastOptions={{
@@ -39,13 +44,23 @@ function App() {
         }} 
       />
 
+      {/* Menú lateral izquierdo */}
       <Sidebar currentView={currentView} setCurrentView={setCurrentView} />
       
-      <main className="flex-1 p-10 overflow-y-auto">
-         {currentView === 'dashboard' && <Dashboard />}
-         {currentView === 'activos' && <AssetList />}
-         {currentView === 'empleados' && <EmployeeList />}
-      </main>
+      {/* Contenedor derecho (Topbar + Contenido principal) */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        
+        {/* Barra superior con nuestro perfil */}
+        <Topbar onLogout={handleLogout} />
+
+        {/* Contenido dinámico */}
+        <main className="flex-1 p-10 overflow-y-auto">
+          {currentView === 'dashboard' && <Dashboard />}
+          {currentView === 'activos' && <AssetList />}
+          {currentView === 'empleados' && <EmployeeList />}
+        </main>
+        
+      </div>
     </div>
   )
 }

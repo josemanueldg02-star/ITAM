@@ -21,16 +21,16 @@ public class DataInitializer {
     @Bean
     public CommandLineRunner initData(AppUserRepository userRepository, PasswordEncoder passwordEncoder) {
         return args -> {
-            if (userRepository.count() == 0) {
-                AppUser admin = new AppUser();
-                // Usamos las variables en lugar del texto hardcodeado
-                admin.setUsername(adminUsername);
-                admin.setPassword(passwordEncoder.encode(adminPassword)); 
-                admin.setRole("ROLE_ADMIN");
-                
-                userRepository.save(admin);
-                System.out.println("✅ Administrador maestro creado con éxito desde properties");
-            }
+            // Buscamos si el admin ya existe. Si no existe, preparamos un usuario nuevo.
+            AppUser admin = userRepository.findByUsername(adminUsername).orElse(new AppUser());
+            
+            admin.setUsername(adminUsername);
+            // ¡Clave! Sobrescribimos la contraseña SIEMPRE con lo que haya en el properties
+            admin.setPassword(passwordEncoder.encode(adminPassword)); 
+            admin.setRole("ROLE_ADMIN");
+            
+            userRepository.save(admin);
+            System.out.println("✅ Administrador sincronizado con éxito desde properties");
         };
     }
 }

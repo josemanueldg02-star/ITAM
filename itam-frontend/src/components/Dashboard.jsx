@@ -6,11 +6,22 @@ export default function Dashboard() {
 
   // Pedimos los datos al backend al cargar el componente
   useEffect(() => {
-    fetch('http://localhost:8081/api/assets')
-      .then(response => response.json())
+    // 1. Recuperamos el pase VIP del bolsillo del navegador
+    const token = localStorage.getItem('token');
+
+    // 2. Hacemos la petición adjuntando las Cabeceras (Headers)
+    fetch('http://localhost:8081/api/assets', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+      .then(response => {
+        if (!response.ok) throw new Error("Acceso denegado");
+        return response.json();
+      })
       .then(data => {
         setAssets(data);
-        setIsLoading(false); // Apagamos el mensaje de carga
+        setIsLoading(false);
       })
       .catch(error => {
         console.error("Error conectando con el backend:", error);
