@@ -6,6 +6,7 @@ import AssetList from './components/AssetList';
 import EmployeeList from './components/EmployeeList';
 import Dashboard from './components/Dashboard';
 import Login from './components/Login';
+import RequestList from './components/RequestList';
 
 function App() {
   const [currentView, setCurrentView] = useState('dashboard');
@@ -58,6 +59,7 @@ function App() {
           {currentView === 'dashboard' && <Dashboard />}
           {currentView === 'activos' && <AssetList />}
           {currentView === 'empleados' && <EmployeeList />}
+          {currentView === 'peticiones' && <RequestList />}
         </main>
         
       </div>

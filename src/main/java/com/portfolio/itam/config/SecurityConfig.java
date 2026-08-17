@@ -43,6 +43,10 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll() 
+                
+                // PASILLO SEGURO PARA SWAGGER: Permitimos el acceso a la interfaz y sus archivos visuales (webjars)
+                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/webjars/**").permitAll()
+                
                 // CIERRE DE BÓVEDA: Exigimos autenticación para TODO lo demás
                 .anyRequest().authenticated() 
             )
